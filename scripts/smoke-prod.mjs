@@ -6,12 +6,17 @@
  */
 
 const BASE_URL = process.env.PRODUCTION_URL || 'http://localhost:3000';
+const BYPASS_TOKEN = process.env.VERCEL_PROTECTION_BYPASS;
 
 async function testEndpoint(name, path, options = {}) {
   const url = `${BASE_URL}${path}`;
+  const headers = {
+    ...(options.headers || {}),
+    ...(BYPASS_TOKEN ? { 'x-vercel-protection-bypass': BYPASS_TOKEN } : {}),
+  };
   const start = Date.now();
   try {
-    const res = await fetch(url, options);
+    const res = await fetch(url, { ...options, headers });
     const latency = Date.now() - start;
     const isJson = (res.headers.get('content-type') || '').includes('application/json');
     const data = isJson ? await res.json() : await res.text();
