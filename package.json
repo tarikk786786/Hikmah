@@ -1,0 +1,35 @@
+{
+  "name": "jarvis-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "JARVIS — Production-oriented, modular personal AI assistant operating system",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace=apps/web run dev",
+    "build": "npm --workspace=apps/web run build",
+    "start": "npm --workspace=apps/web run start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "worker:agent": "ts-node workers/agent-worker/index.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "ai": "^7.0.102",
+    "dotenv": "^16.6.1",
+    "ioredis": "^5.6.1",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/uuid": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.8"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

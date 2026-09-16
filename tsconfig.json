@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/core/*": ["core/*"],
+      "@/memory/*": ["memory/*"],
+      "@/agents/*": ["agents/*"],
+      "@/tools/*": ["tools/*"],
+      "@/skills/*": ["skills/*"],
+      "@/voice/*": ["voice/*"],
+      "@/workflows/*": ["workflows/*"],
+      "@/mcp/*": ["mcp/*"],
+      "@/security/*": ["security/*"],
+      "@/workers/*": ["workers/*"],
+      "@/storage/*": ["storage/*"],
+      "@/research/*": ["research/*"],
+      "@/browser/*": ["browser/*"],
+      "@/orchestration/*": ["orchestration/*"],
+      "@/capability-ecosystem/*": ["capability-ecosystem/*"],
+      "@/paio/*": ["paio/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".next"
+  ]
+}

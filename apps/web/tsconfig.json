@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"],
+      "@/core/*": ["../../core/*"],
+      "@/memory/*": ["../../memory/*"],
+      "@/agents/*": ["../../agents/*"],
+      "@/tools/*": ["../../tools/*"],
+      "@/skills/*": ["../../skills/*"],
+      "@/voice/*": ["../../voice/*"],
+      "@/workflows/*": ["../../workflows/*"],
+      "@/mcp/*": ["../../mcp/*"],
+      "@/security/*": ["../../security/*"],
+      "@/workers/*": ["../../workers/*"],
+      "@/storage/*": ["../../storage/*"],
+      "@/research/*": ["../../research/*"],
+      "@/browser/*": ["../../browser/*"],
+      "@/orchestration/*": ["../../orchestration/*"],
+      "@/capability-ecosystem/*": ["../../capability-ecosystem/*"],
+      "@/paio/*": ["../../paio/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
