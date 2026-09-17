@@ -45,6 +45,8 @@ export class QueryPlanner {
       lower.includes('protocol') ||
       lower.includes('typescript') ||
       lower.includes('database') ||
+      lower.includes('sql') ||
+      lower.includes('concurrency') ||
       lower.includes('system')
     ) {
       queries.push({
@@ -64,7 +66,9 @@ export class QueryPlanner {
       lower.includes('benchmark') ||
       lower.includes('evaluation') ||
       lower.includes('llm') ||
-      lower.includes('model')
+      lower.includes('model') ||
+      lower.includes('compare') ||
+      lower.includes('workload')
     ) {
       queries.push({
         queryId: `qry_${now}_3`,

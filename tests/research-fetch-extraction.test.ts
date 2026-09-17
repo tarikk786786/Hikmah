@@ -7,19 +7,19 @@ import { DiscoveryEngine } from '../research/core/discovery-engine.js';
 describe('PRD 11: Fetching, SSRF Guard & Trafilatura Extraction', () => {
   it('should block SSRF requests to private and metadata addresses', () => {
     // Loopback
-    expect(() => HttpSecurityGuard.validateUrl('http://127.0.0.1:8080/admin')).toThrow(/SSRF/);
-    expect(() => HttpSecurityGuard.validateUrl('http://localhost:3000')).toThrow(/SSRF/);
+    expect(() => HttpSecurityGuard.assertSafeUrl('http://127.0.0.1:8080/admin')).toThrow(/SSRF/);
+    expect(() => HttpSecurityGuard.assertSafeUrl('http://localhost:3000')).toThrow(/SSRF/);
 
     // Private subnets
-    expect(() => HttpSecurityGuard.validateUrl('http://192.168.1.1/router')).toThrow(/SSRF/);
-    expect(() => HttpSecurityGuard.validateUrl('http://10.0.0.5/api')).toThrow(/SSRF/);
-    expect(() => HttpSecurityGuard.validateUrl('http://172.16.0.1/status')).toThrow(/SSRF/);
+    expect(() => HttpSecurityGuard.assertSafeUrl('http://192.168.1.1/router')).toThrow(/SSRF/);
+    expect(() => HttpSecurityGuard.assertSafeUrl('http://10.0.0.5/api')).toThrow(/SSRF/);
+    expect(() => HttpSecurityGuard.assertSafeUrl('http://172.16.0.1/status')).toThrow(/SSRF/);
 
     // Cloud metadata
-    expect(() => HttpSecurityGuard.validateUrl('http://169.254.169.254/latest/meta-data')).toThrow(/SSRF/);
+    expect(() => HttpSecurityGuard.assertSafeUrl('http://169.254.169.254/latest/meta-data')).toThrow(/SSRF/);
 
     // Valid public URL
-    expect(() => HttpSecurityGuard.validateUrl('https://en.wikipedia.org/wiki/Artificial_intelligence')).not.toThrow();
+    expect(() => HttpSecurityGuard.assertSafeUrl('https://en.wikipedia.org/wiki/Artificial_intelligence')).not.toThrow();
   });
 
   it('should extract main text and strip scripts/navigation via TrafilaturaExtractor', () => {

@@ -18,10 +18,10 @@ describe('PRD 11: Query Planning & Search Routing', () => {
 
   it('should canonicalize URLs and strip tracking parameters', () => {
     const raw = 'HTTPS://WWW.Example.com:443/docs/api?utm_source=twitter&utm_medium=social&page=1#section-2';
-    const canonical = UrlCanonicalizer.canonicalize(raw);
+    const { canonicalUrl: canonical, urlHash } = UrlCanonicalizer.canonicalize(raw);
 
     expect(canonical).toBe('https://www.example.com/docs/api?page=1');
-    expect(UrlCanonicalizer.hash(canonical)).toMatch(/^[a-f0-9]{64}$/);
+    expect(urlHash).toMatch(/^[a-f0-9]{64}$/);
   });
 
   it('should route multi-intent searches across providers', async () => {

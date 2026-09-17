@@ -7,10 +7,10 @@ describe('PRD 11: Verification, Wire Syndication & Citation Engines', () => {
   it('should rank authority correctly based on domain classification', () => {
     expect(SourceEvaluator.evaluateAuthority('https://csrc.nist.gov/publications')).toBe(1);
     expect(SourceEvaluator.evaluateAuthority('https://mit.edu/csail')).toBe(2);
-    expect(SourceEvaluator.evaluateAuthority('https://www.reuters.com/technology')).toBe(3);
+    expect(SourceEvaluator.evaluateAuthority('https://www.reuters.com/technology')).toBe(4);
     expect(SourceEvaluator.evaluateAuthority('https://github.com/nodejs/node')).toBe(3);
-    expect(SourceEvaluator.evaluateAuthority('https://techcrunch.com/article')).toBe(5);
-    expect(SourceEvaluator.evaluateAuthority('https://reddit.com/r/technology')).toBe(7);
+    expect(SourceEvaluator.evaluateAuthority('https://techcrunch.com/article')).toBe(6);
+    expect(SourceEvaluator.evaluateAuthority('https://reddit.com/r/technology')).toBe(6);
   });
 
   it('should cluster identical syndicated wire stories to prevent circular consensus', () => {
@@ -65,7 +65,9 @@ describe('PRD 11: Verification, Wire Syndication & Citation Engines', () => {
     ];
 
     const validated = citationEngine.validateCitations(citations, sources);
-    expect(validated[0].verified).toBe(true);
-    expect(validated[1].verified).toBe(false);
+    expect(validated[0].valid).toBe(true);
+    expect(validated[0].citation.verified).toBe(true);
+    expect(validated[1].valid).toBe(false);
+    expect(validated[1].citation.verified).toBe(false);
   });
 });

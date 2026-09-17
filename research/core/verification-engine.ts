@@ -63,16 +63,16 @@ export class SourceEvaluator {
 export class DuplicateStoryDetector {
   private stories: Array<{ id: string; text: string }> = [];
 
-  public registerStory(id: string, textOrTitle: string, maybeText?: string): { clusterId: string; isDuplicate: boolean } {
+  public registerStory(id: string, textOrTitle: string, maybeText?: string): { clusterId: string; isDuplicate: boolean; isOriginalLead: boolean } {
     const text = maybeText !== undefined ? maybeText : textOrTitle;
     this.stories.push({ id, text });
-    const words = text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).slice(0, 20).join(' ');
+    const words = text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).slice(0, 15).join(' ');
     const clusterId = crypto.createHash('sha256').update(words).digest('hex').slice(0, 16);
     const count = this.stories.filter((s) => {
-      const w = s.text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).slice(0, 20).join(' ');
+      const w = s.text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).slice(0, 15).join(' ');
       return crypto.createHash('sha256').update(w).digest('hex').slice(0, 16) === clusterId;
     }).length;
-    return { clusterId, isDuplicate: count > 1 };
+    return { clusterId, isDuplicate: count > 1, isOriginalLead: count === 1 };
   }
   /**
    * Detects syndicated or republished stories by clustering similar texts,
@@ -82,8 +82,8 @@ export class DuplicateStoryDetector {
     const clusters: Map<string, string[]> = new Map(); // clusterKey -> sourceIds
 
     for (const s of sources) {
-      // Create a fuzzy content signature (fingerprint first 20 words)
-      const words = s.text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).slice(0, 20).join(' ');
+      // Create a fuzzy content signature (fingerprint first 15 words)
+      const words = s.text.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).slice(0, 15).join(' ');
       const clusterKey = crypto.createHash('sha256').update(words).digest('hex').slice(0, 16);
 
       if (!clusters.has(clusterKey)) {

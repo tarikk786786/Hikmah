@@ -34,6 +34,10 @@ export class TrafilaturaExtractor {
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     const title = titleMatch ? titleMatch[1].trim() : 'Extracted Research Source';
 
+    // Extract Author
+    const authorMatch = html.match(/<meta[^>]*name=["']author["'][^>]*content=["']([^"']+)["'][^>]*>|<meta[^>]*content=["']([^"']+)["'][^>]*name=["']author["'][^>]*>/i);
+    const author = authorMatch ? (authorMatch[1] || authorMatch[2]).trim() : undefined;
+
     // 2. Extract Headings
     const headings: string[] = [];
     const headingMatches = html.matchAll(/<h[1-3][^>]*>([^<]+)<\/h[1-3]>/gi);
@@ -85,6 +89,7 @@ export class TrafilaturaExtractor {
 
     return {
       title,
+      author,
       mainContent,
       markdown: mainContent,
       headings,
