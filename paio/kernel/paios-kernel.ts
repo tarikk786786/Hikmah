@@ -11,6 +11,12 @@ import { TaskManager } from '../tasks/task-manager';
 import { NotificationCenter } from '../notifications/notification-center';
 import { SystemHealthEngine, SystemHealthReport } from '../health/system-health-engine';
 import { PAIOSAuditEngine, PAIOSDecisionRecord } from '../audit/paios-audit-engine';
+import { AgentRegistry } from '../agents/agent-registry';
+import { AgentFactory } from '../agents/agent-factory';
+import { ModelRouter } from '../models/model-router';
+import { KnowledgeEngine } from '../knowledge/knowledge-engine';
+import { EvaluationEngine } from '../evaluation/evaluation-engine';
+import { ObservabilityEngine } from '../observability/observability-engine';
 
 export interface KernelBootStatus {
   isBooted: boolean;
@@ -56,6 +62,12 @@ export class PAIOSKernel {
   public readonly notifications = NotificationCenter.getInstance();
   public readonly health = SystemHealthEngine.getInstance();
   public readonly audit = PAIOSAuditEngine.getInstance();
+  public readonly agents = AgentRegistry.getInstance();
+  public readonly agentFactory = AgentFactory.getInstance();
+  public readonly models = ModelRouter.getInstance();
+  public readonly knowledge = KnowledgeEngine.getInstance();
+  public readonly evaluation = EvaluationEngine.getInstance();
+  public readonly observability = ObservabilityEngine.getInstance();
 
   private constructor() {}
 
@@ -85,6 +97,9 @@ export class PAIOSKernel {
 
     this.isBooted = true;
 
+    // Initialize agent taxonomy
+    this.seedAgentTaxonomy();
+
     this.bus.emit({
       type: 'kernel.booted',
       source: 'PAIOSKernel',
@@ -98,6 +113,35 @@ export class PAIOSKernel {
     });
 
     return this.getStatus();
+  }
+
+  private seedAgentTaxonomy() {
+    const taxonomy = [
+      'Generalist Agent', 'Personal Assistant Agent', 'Supervisor Agent', 'Planner Agent', 'Router Agent',
+      'Executor Agent', 'Research Agent', 'Deep Research Agent', 'Browser Agent', 'Computer-Use Agent',
+      'Coding Agent', 'Code Review Agent', 'Debugging Agent', 'Testing Agent', 'DevOps Agent', 'SRE Agent',
+      'Database Agent', 'SQL Agent', 'Data Analyst Agent', 'Data Scientist Agent', 'Math Agent',
+      'Science Agent', 'Document Agent', 'Knowledge Agent', 'RAG Agent', 'Memory Agent',
+      'Knowledge-Graph Agent', 'Writing Agent', 'Editor Agent', 'Translator Agent', 'Summarizer Agent',
+      'Fact-Checking Agent', 'Search Agent', 'OSINT Agent', 'Vision Agent', 'OCR Agent', 'Image Agent',
+      'Audio Agent', 'ASR Agent', 'TTS Agent', 'Video Agent', 'Multimodal Agent', 'Meeting Agent',
+      'Calendar Agent', 'Email Agent', 'Communication Agent', 'Automation Agent', 'Workflow Agent',
+      'Project Manager Agent', 'Task Manager Agent', 'Notification Agent', 'Monitoring Agent', 'Security Agent',
+      'SOC Agent', 'Incident Agent', 'Privacy Agent', 'Compliance Agent', 'Simulation Agent',
+      'Forecasting Agent', 'Optimization Agent', 'Critic Agent', 'Verifier Agent', 'Judge Agent',
+      'Evaluator Agent', 'Red-Team Agent', 'Debate Agent', 'Ensemble Agent', 'Reflection Agent',
+      'Recovery Agent', 'Memory-Consolidation Agent', 'Learning Agent', 'Skill-Builder Agent', 'Agent-Factory Agent'
+    ];
+
+    if (this.agents.listAgents().length === 0) {
+      for (const type of taxonomy) {
+        this.agentFactory.createAgent({
+          name: `Core ${type}`,
+          description: `Canonical Hikmah ${type}`,
+          type: type,
+        });
+      }
+    }
   }
 
   public getStatus(): KernelBootStatus {
