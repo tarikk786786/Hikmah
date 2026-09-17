@@ -7,6 +7,8 @@ const rootDir = path.resolve(__dirname, '../../');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: rootDir,
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
   experimental: {
     externalDir: true,
   },

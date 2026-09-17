@@ -22,3 +22,5 @@ scratch/*.json
 scratch/*.txt
 .turbo
 storage_data/
+
+.vercel
