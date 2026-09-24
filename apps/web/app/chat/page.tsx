@@ -205,9 +205,13 @@ export default function AllInOnePage() {
 
         {/* Message Stream */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <AnimatePresence initial={false}>
           {messages.map((msg) => (
-            <div
+            <motion.div
               key={msg.id}
+              initial={{ opacity: 0, y: 15, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
               className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
             >
               <div className="flex items-center space-x-2 mb-1.5 text-xs text-[#64748B] font-mono">
@@ -218,56 +222,91 @@ export default function AllInOnePage() {
                 className={`max-w-3xl px-4 py-3 rounded-xl text-sm leading-relaxed ${
                   msg.role === 'user'
                     ? 'bg-[#00F0FF]/15 text-[#F1F5F9] border border-[#00F0FF]/30'
-                    : 'bg-[#111827] text-[#F1F5F9] border border-[#1E293B]'
+                    : 'bg-[#111827] text-[#F1F5F9] border border-[#1E293B] shadow-lg'
                 }`}
               >
                 {msg.content || (loading && msg.id.startsWith('asst_') ? (
-                  <div className="flex items-center space-x-2 text-[#00F0FF]">
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center space-x-3 text-[#00F0FF]"
+                  >
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span className="font-mono text-xs">Computing response...</span>
-                  </div>
+                    <span className="font-mono text-xs">Computing sequence...</span>
+                    <div className="flex space-x-1">
+                      {[0,1,2].map(i => (
+                        <motion.div 
+                          key={i}
+                          animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
+                          transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2 }}
+                          className="w-1.5 h-1.5 rounded-full bg-[#00F0FF]"
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
                 ) : null)}
 
                 {/* Plan Steps Visibility */}
                 {msg.plan && msg.plan.steps && msg.plan.steps.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-[#1E293B]/70">
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mt-3 pt-3 border-t border-[#1E293B]/70"
+                  >
                     <div className="flex items-center space-x-1.5 text-[11px] font-mono text-[#00F0FF] mb-2">
                       <Layers className="w-3.5 h-3.5" />
                       <span>EXECUTION PLAN ({msg.plan.steps.length} STEPS)</span>
                     </div>
                     <div className="space-y-1">
                       {msg.plan.steps.map((s: any, idx: number) => (
-                        <div key={idx} className="flex items-center justify-between text-xs bg-[#0B0F17]/50 px-2.5 py-1 rounded border border-[#1E293B]">
+                        <motion.div 
+                          key={idx} 
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.1 }}
+                          className="flex items-center justify-between text-xs bg-[#0B0F17]/50 px-2.5 py-1 rounded border border-[#1E293B]"
+                        >
                           <span className="text-[#94A3B8]">{idx + 1}. {s.description}</span>
                           <span className={`text-[10px] uppercase font-mono ${s.status === 'completed' ? 'text-emerald-400' : 'text-amber-400'}`}>
                             {s.status}
                           </span>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Tool Execution Badges */}
                 {msg.toolResults && msg.toolResults.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-[#1E293B]/70 space-y-1.5">
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-3 pt-3 border-t border-[#1E293B]/70 space-y-1.5"
+                  >
                     <div className="flex items-center space-x-1.5 text-[11px] font-mono text-[#94A3B8]">
                       <Terminal className="w-3.5 h-3.5 text-[#00F0FF]" />
                       <span>TOOL ACTIONS EXECUTED</span>
                     </div>
                     {msg.toolResults.map((tr, idx) => (
-                      <div key={idx} className="text-xs bg-[#0B0F17] p-2 rounded border border-[#1E293B] font-mono">
+                      <motion.div 
+                        key={idx} 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: idx * 0.15 }}
+                        className="text-xs bg-[#0B0F17] p-2 rounded border border-[#1E293B] font-mono"
+                      >
                         <div className="flex justify-between items-center text-[#00F0FF]">
                           <span>&gt; {tr.toolName}</span>
                           <span className="text-[10px] text-[#64748B]">{tr.result.executionTimeMs || 0}ms</span>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
+          </AnimatePresence>
           <div ref={messagesEndRef} />
         </div>
 
@@ -285,9 +324,18 @@ export default function AllInOnePage() {
                 <span>Active Voice Session</span>
               </div>
               
-              <div className="relative flex items-center justify-center h-24 w-24">
-                <div className={`absolute inset-0 rounded-full transition-all duration-300 ${listening ? 'bg-[#00F0FF]/20 animate-ping' : 'bg-transparent'}`} />
-                <div className={`z-10 w-16 h-16 rounded-full flex items-center justify-center ${listening ? 'bg-[#00F0FF]/30' : 'bg-[#1E293B]'}`}>
+              <div className="relative flex items-center justify-center h-28 w-28">
+                {listening && [0,1,2].map(i => (
+                  <motion.div
+                    key={i}
+                    initial={{ scale: 0.8, opacity: 0.8 }}
+                    animate={{ scale: 2, opacity: 0 }}
+                    transition={{ repeat: Infinity, duration: 2, delay: i * 0.6, ease: "easeOut" }}
+                    className="absolute inset-0 rounded-full border border-[#00F0FF]/40"
+                  />
+                ))}
+                <div className={`absolute inset-0 rounded-full transition-all duration-300 ${listening ? 'bg-[#00F0FF]/10' : 'bg-transparent'}`} />
+                <div className={`z-10 w-16 h-16 rounded-full flex items-center justify-center ${listening ? 'bg-[#00F0FF]/20 shadow-[0_0_20px_rgba(0,240,255,0.4)]' : 'bg-[#1E293B]'}`}>
                   <Mic className={`w-8 h-8 ${listening ? 'text-[#00F0FF]' : 'text-[#64748B]'}`} />
                 </div>
               </div>
