@@ -30,7 +30,11 @@ export default function AgentsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: activeAgent === 'research' ? 'research_task' : 'agent_task',
-          payload: { goal, topic: goal }
+          payload: { 
+            instructions: goal,
+            agentId: activeAgent,
+            taskId: runId
+          }
         })
       });
       const data = await res.json();

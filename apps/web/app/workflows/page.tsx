@@ -1,17 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Workflow as WorkflowIcon,
   Play,
   Layers,
-  CheckCircle2,
   Clock,
-  ArrowRight,
-  GitCommit,
-  Sparkles,
-  ShieldCheck,
-  Search
+  ArrowRight
 } from 'lucide-react';
 
 interface WorkflowTemplate {
@@ -25,7 +20,7 @@ interface WorkflowTemplate {
 interface WorkflowRunItem {
   id: string;
   workflowName: string;
-  status: 'RUNNING' | 'COMPLETED' | 'FAILED' | 'PAUSED';
+  status: 'RUNNING' | 'COMPLETED' | 'FAILED' | 'PAUSED' | 'QUEUED' | 'ACTIVE';
   progress: number;
   currentStep: string;
   startedAt: string;
@@ -56,24 +51,56 @@ export default function WorkflowsPage() {
     }
   ]);
 
-  const [runs] = useState<WorkflowRunItem[]>([
-    {
-      id: 'run_92a10f',
-      workflowName: 'Autonomous Deep Research Pipeline',
-      status: 'RUNNING',
-      progress: 65,
-      currentStep: 'Parse Sources',
-      startedAt: '12 mins ago'
-    },
-    {
-      id: 'run_43b811',
-      workflowName: 'Automated Codebase Refactor & Audit',
-      status: 'COMPLETED',
-      progress: 100,
-      currentStep: 'Generate Patch',
-      startedAt: '2 hours ago'
-    }
-  ]);
+  const [runs, setRuns] = useState<WorkflowRunItem[]>([]);
+
+  useEffect(() => {
+    fetch('/api/jobs')
+      .then(res => res.json())
+      .then(data => {
+        if (data.jobs) {
+          const mapped = data.jobs.map((job: any) => ({
+            id: job.id,
+            workflowName: job.name || 'Agent Task',
+            status: job.status.toUpperCase(),
+            progress: job.status === 'completed' ? 100 : job.status === 'active' ? 50 : 0,
+            currentStep: job.status === 'active' ? 'Executing' : job.status === 'completed' ? 'Done' : 'Pending',
+            startedAt: new Date(job.createdAt).toLocaleString()
+          }));
+          setRuns(mapped);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const triggerWorkflow = async (wf: WorkflowTemplate) => {
+    await fetch('/api/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'agent_task',
+        payload: {
+          taskId: `wf_${Date.now()}`,
+          agentId: 'agt_supervisor',
+          instructions: `Execute workflow: ${wf.name}`
+        }
+      })
+    });
+    // Optimistic refresh
+    setTimeout(() => {
+      fetch('/api/jobs').then(res => res.json()).then(data => {
+        if (data.jobs) {
+          setRuns(data.jobs.map((job: any) => ({
+            id: job.id,
+            workflowName: job.name || 'Agent Task',
+            status: job.status.toUpperCase(),
+            progress: job.status === 'completed' ? 100 : job.status === 'active' ? 50 : 0,
+            currentStep: job.status === 'active' ? 'Executing' : job.status === 'completed' ? 'Done' : 'Pending',
+            startedAt: new Date(job.createdAt).toLocaleString()
+          })));
+        }
+      });
+    }, 1000);
+  };
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 font-mono">
@@ -124,7 +151,9 @@ export default function WorkflowsPage() {
                 </div>
               </div>
 
-              <button className="w-full flex items-center justify-center space-x-2 py-2 bg-[#00F0FF]/15 hover:bg-[#00F0FF]/25 text-[#00F0FF] border border-[#00F0FF]/30 rounded-lg text-xs font-bold transition">
+              <button 
+                onClick={() => triggerWorkflow(wf)}
+                className="w-full flex items-center justify-center space-x-2 py-2 bg-[#00F0FF]/15 hover:bg-[#00F0FF]/25 text-[#00F0FF] border border-[#00F0FF]/30 rounded-lg text-xs font-bold transition">
                 <Play className="w-3.5 h-3.5" />
                 <span>Trigger Workflow</span>
               </button>
@@ -159,7 +188,7 @@ export default function WorkflowsPage() {
                   <td className="p-3.5">
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] border ${
-                        r.status === 'RUNNING'
+                        r.status === 'RUNNING' || r.status === 'ACTIVE' || r.status === 'QUEUED'
                           ? 'text-[#00F0FF] bg-[#00F0FF]/10 border-[#00F0FF]/30 animate-pulse'
                           : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
                       }`}
