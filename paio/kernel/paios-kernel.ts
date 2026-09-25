@@ -19,6 +19,8 @@ import { AdapterRegistry } from '../agents/providers/adapter-registry';
 import { ObservabilityRegistry } from '../observability/providers/obs-registry';
 import { EvaluationRegistry } from '../evaluation/providers/eval-registry';
 
+import { JobQueue } from '../jobs/job-queue';
+
 export interface KernelBootStatus {
   isBooted: boolean;
   version: string;
@@ -70,6 +72,7 @@ export class PAIOSKernel {
   public readonly agentProviders = AdapterRegistry.getInstance();
   public readonly evaluation = EvaluationRegistry.getInstance();
   public readonly observability = ObservabilityRegistry.getInstance();
+  public readonly jobs = JobQueue.getInstance();
 
   private constructor() {}
 
@@ -104,6 +107,10 @@ export class PAIOSKernel {
 
     // Initialize knowledge vault
     await this.knowledge.initialize();
+
+    // Initialize Background Job Harness
+    const { WorkerHarness } = await import('../jobs/worker-harness.js');
+    WorkerHarness.initialize(this);
 
     this.bus.emit({
       type: 'kernel.booted',
@@ -225,15 +232,21 @@ export class PAIOSKernel {
     } else {
       outputText = `Command processed successfully for category '${intentResult.category}'. Assigned agent: ${intentResult.suggestedAgents.join(', ') || 'system-kernel'}.`;
       
-      // If subtasks generated, automatically register them in TaskManager
+      // If subtasks generated, automatically register them in TaskManager and JobQueue
       if (intentResult.subtasks.length > 0 && activeProject) {
         for (const sub of intentResult.subtasks) {
-          this.tasks.createTask({
+          const task = this.tasks.createTask({
             projectId: activeProject.id,
             title: sub.description,
             priority: intentResult.urgency === 'critical' ? 'urgent' : 'medium',
             assignedAgentId: sub.suggestedAgent,
           });
+          
+          this.jobs.enqueue('agent_task', {
+            taskId: task.id,
+            agentId: sub.suggestedAgent,
+            instructions: sub.description
+          }, intentResult.urgency === 'critical' ? 'critical' : 'normal');
         }
       }
 

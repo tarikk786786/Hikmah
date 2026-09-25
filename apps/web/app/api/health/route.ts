@@ -20,7 +20,7 @@ export async function GET() {
         toolsCount: kernel.agentProviders ? 4 : 4,
         skillsCount: kernel.agents.listAgents().length,
         memoriesCount: kernel.knowledge.getVaultMap().length,
-        queueLength: 0,
+        queueLength: kernel.jobs.listJobs().filter(j => j.status === 'queued' || j.status === 'active').length,
       },
       subsystems: {
         healthy: status.health.healthyCount,
