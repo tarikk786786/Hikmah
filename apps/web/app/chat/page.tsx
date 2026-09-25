@@ -425,7 +425,7 @@ export default function AllInOnePage() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Command HIKMAH..."
+              placeholder="Command HIKMAH (vLLM, OpenHands, Obsidian Engine ready)..."
               className="w-full bg-[#111827] text-[#F1F5F9] placeholder-[#64748B] text-sm pl-5 pr-28 py-3.5 rounded-2xl border border-[#1E293B] focus:outline-none focus:border-[#00F0FF]/50 focus:ring-1 focus:ring-[#00F0FF]/50 transition-all shadow-inner"
             />
             <div className="absolute right-2.5 flex items-center space-x-2">

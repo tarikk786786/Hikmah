@@ -27,10 +27,15 @@ export default function DashboardPage() {
     fetch('/api/health')
       .then(res => res.json())
       .then(data => {
-        setStats(prev => ({
-          ...prev,
-          uptime: data.uptimeSeconds || 120
-        }));
+        if (data.stats) {
+          setStats(prev => ({
+            ...prev,
+            uptime: data.uptimeSeconds || 120,
+            memoriesCount: data.stats.memoriesCount,
+            skillsCount: data.stats.skillsCount,
+            toolsCount: data.stats.toolsCount,
+          }));
+        }
       })
       .catch(() => {});
   }, []);

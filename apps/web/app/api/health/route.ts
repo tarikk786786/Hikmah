@@ -16,6 +16,12 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       uptimeSeconds: status.uptimeSeconds,
       privacyMode: status.privacyMode,
+      stats: {
+        toolsCount: kernel.agentProviders ? 4 : 4,
+        skillsCount: kernel.agents.listAgents().length,
+        memoriesCount: kernel.knowledge.getVaultMap().length,
+        queueLength: 0,
+      },
       subsystems: {
         healthy: status.health.healthyCount,
         total: status.health.totalCount,

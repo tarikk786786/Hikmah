@@ -13,10 +13,11 @@ import { SystemHealthEngine, SystemHealthReport } from '../health/system-health-
 import { PAIOSAuditEngine, PAIOSDecisionRecord } from '../audit/paios-audit-engine';
 import { AgentRegistry } from '../agents/agent-registry';
 import { AgentFactory } from '../agents/agent-factory';
-import { ModelRouter } from '../models/model-router';
-import { KnowledgeEngine } from '../knowledge/knowledge-engine';
-import { EvaluationEngine } from '../evaluation/evaluation-engine';
-import { ObservabilityEngine } from '../observability/observability-engine';
+import { VaultEngine } from '../knowledge/core/vault-engine';
+import { ModelRouter } from '../../core/model-router/router';
+import { AdapterRegistry } from '../agents/providers/adapter-registry';
+import { ObservabilityRegistry } from '../observability/providers/obs-registry';
+import { EvaluationRegistry } from '../evaluation/providers/eval-registry';
 
 export interface KernelBootStatus {
   isBooted: boolean;
@@ -64,10 +65,11 @@ export class PAIOSKernel {
   public readonly audit = PAIOSAuditEngine.getInstance();
   public readonly agents = AgentRegistry.getInstance();
   public readonly agentFactory = AgentFactory.getInstance();
-  public readonly models = ModelRouter.getInstance();
-  public readonly knowledge = KnowledgeEngine.getInstance();
-  public readonly evaluation = EvaluationEngine.getInstance();
-  public readonly observability = ObservabilityEngine.getInstance();
+  public readonly models = new ModelRouter();
+  public readonly knowledge = new VaultEngine(process.cwd() + '/paio/knowledge/Vault');
+  public readonly agentProviders = AdapterRegistry.getInstance();
+  public readonly evaluation = EvaluationRegistry.getInstance();
+  public readonly observability = ObservabilityRegistry.getInstance();
 
   private constructor() {}
 
@@ -99,6 +101,9 @@ export class PAIOSKernel {
 
     // Initialize agent taxonomy
     this.seedAgentTaxonomy();
+
+    // Initialize knowledge vault
+    await this.knowledge.initialize();
 
     this.bus.emit({
       type: 'kernel.booted',

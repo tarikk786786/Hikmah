@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { PAIOSKernel } from '@/paio/kernel/paios-kernel';
 
 export async function GET() {
@@ -9,7 +9,7 @@ export async function GET() {
     }
 
     const agents = kernel.agents.listAgents();
-    const knowledge = kernel.knowledge.search('');
+    const knowledgeCount = kernel.knowledge.getVaultMap().length;
     const models = [
       { id: 'gpt-4o', type: 'cloud', capabilities: ['reasoning', 'vision', 'coding'] },
       { id: 'claude-3-5-sonnet', type: 'cloud', capabilities: ['reasoning', 'coding'] },
@@ -20,7 +20,7 @@ export async function GET() {
       success: true,
       data: {
         agentCount: agents.length,
-        knowledgeCount: knowledge.length,
+        knowledgeCount: knowledgeCount,
         activeModels: models.length,
         systemHealth: kernel.health.getReport().overall,
         uptime: kernel.getStatus().uptimeSeconds,
