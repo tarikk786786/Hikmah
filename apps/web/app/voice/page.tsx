@@ -8,14 +8,34 @@ export default function VoicePage() {
   const [transcript, setTranscript] = useState('');
   const [response, setResponse] = useState('');
 
-  const toggleListening = () => {
+  const toggleListening = async () => {
     if (!listening) {
       setListening(true);
-      setTranscript('Listening for operator audio stream (faster-whisper VAD)...');
-      setTimeout(() => {
-        setTranscript('"HIKMAH, summarize current memory store status."');
-        setResponse('Operating at nominal efficiency, sir. All vectors indexed across short-term and persistent long-term storage.');
-        setListening(false);
+      setTranscript('Listening for operator audio stream (WebRTC)...');
+      setResponse('');
+      
+      // Simulate speech delay then API call
+      setTimeout(async () => {
+        const fakeUserSpeech = "Hikmah, check system status.";
+        setTranscript(`"${fakeUserSpeech}"`);
+        
+        try {
+          const res = await fetch('/api/paios/execute', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ command: fakeUserSpeech })
+          });
+          const data = await res.json();
+          if (data.success) {
+            setResponse(data.result.output);
+          } else {
+            setResponse('Error accessing Kernel.');
+          }
+        } catch (e) {
+          setResponse('Network failure.');
+        } finally {
+          setListening(false);
+        }
       }, 3000);
     } else {
       setListening(false);
@@ -27,31 +47,42 @@ export default function VoicePage() {
       <div>
         <h1 className="text-2xl font-bold tracking-wider text-[#F1F5F9] flex items-center justify-center space-x-3">
           <Mic className="w-6 h-6 text-[#00F0FF]" />
-          <span>J.A.R.V.I.S. VOICE INTERFACE</span>
+          <span>HIKMAH VOICE INTERFACE</span>
         </h1>
         <p className="text-sm text-[#94A3B8] font-mono mt-1">
-          faster-whisper STT • Piper TTS • LiveKit WebRTC Session Harness
+          PAIOSKernel Integration • Live Audio Synthesis Stream
         </p>
       </div>
 
-      {/* Voice Visualizer Orb */}
-      <div className="relative my-8 flex items-center justify-center">
-        <div className={`w-48 h-48 rounded-full flex items-center justify-center transition-all duration-700 ${
-          listening
-            ? 'bg-[#00F0FF]/20 border-2 border-[#00F0FF] shadow-[0_0_50px_#00F0FF]'
-            : 'bg-[#111827] border border-[#1E293B]'
-        }`}>
-          <div className={`w-32 h-32 rounded-full flex items-center justify-center ${
-            listening ? 'bg-[#00F0FF]/30 animate-pulse' : 'bg-[#0E1522]'
-          }`}>
-            {listening ? (
-              <Radio className="w-12 h-12 text-[#00F0FF] animate-spin" />
-            ) : (
-              <Mic className="w-12 h-12 text-[#64748B]" />
-            )}
+      {/* Working Voice Wave Animation */}
+      <div className="relative my-12 h-32 flex items-center justify-center">
+        {listening ? (
+          <div className="flex items-center justify-center space-x-2">
+            {[...Array(9)].map((_, i) => (
+              <div 
+                key={i} 
+                className="w-2 bg-[#00F0FF] rounded-full animate-wave"
+                style={{
+                  height: `${Math.max(20, Math.random() * 80)}px`,
+                  animation: `wave ${0.5 + Math.random()}s ease-in-out infinite alternate`,
+                  animationDelay: `${i * 0.1}s`
+                }}
+              />
+            ))}
           </div>
-        </div>
+        ) : (
+          <div className="w-32 h-32 rounded-full bg-[#111827] border border-[#1E293B] flex items-center justify-center transition-all">
+            <Mic className="w-12 h-12 text-[#64748B]" />
+          </div>
+        )}
       </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes wave {
+          0% { height: 20px; opacity: 0.5; }
+          100% { height: 90px; opacity: 1; }
+        }
+      `}} />
 
       {/* Control Button */}
       <button
@@ -68,7 +99,7 @@ export default function VoicePage() {
 
       {/* Spoken Transcription Card */}
       {transcript && (
-        <div className="w-full max-w-xl p-5 bg-[#111827] border border-[#1E293B] rounded-xl text-left space-y-3 font-mono text-xs">
+        <div className="w-full max-w-xl p-5 bg-[#111827] border border-[#1E293B] rounded-xl text-left space-y-3 font-mono text-xs shadow-[0_0_15px_rgba(0,0,0,0.5)]">
           <div className="text-[#64748B] flex items-center space-x-2">
             <Radio className="w-3.5 h-3.5 text-[#00F0FF]" />
             <span>TRANSCRIBED AUDIO</span>
@@ -79,7 +110,7 @@ export default function VoicePage() {
             <div className="pt-3 border-t border-[#1E293B] space-y-1">
               <div className="text-[#00F0FF] flex items-center space-x-2">
                 <Volume2 className="w-3.5 h-3.5" />
-                <span>HIKMAH SYNTHESIZED SPEECH (PIPER)</span>
+                <span>HIKMAH SYNTHESIZED SPEECH</span>
               </div>
               <p className="text-[#94A3B8] font-sans text-sm">{response}</p>
             </div>
