@@ -1,52 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { JarvisCore } from '@/core/assistant/jarvis-core';
-
-// Singleton JarvisCore instance across requests
-const jarvis = new JarvisCore();
+import { PAIOSKernel } from '@/paio/kernel/paios-kernel';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { query, userId, conversationId, projectId, role, approvalToken, stream = true } = body;
+    const { query, sessionId, projectId, stream = true } = body;
 
     if (!query || typeof query !== 'string') {
       return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
     }
 
+    const kernel = PAIOSKernel.getInstance();
+
     if (!stream) {
-      const response = await jarvis.process({
-        query,
-        userId,
-        conversationId,
-        projectId,
-        role,
-        approvalToken
+      const response = await kernel.executeCommand(query, {
+        sessionId,
+        projectId
       });
       return NextResponse.json(response);
     }
 
     // Streaming response using Server-Sent Events (SSE)
     const encoder = new TextEncoder();
-    const streamIterable = jarvis.stream({
-      query,
-      userId,
-      conversationId,
-      projectId,
-      role,
-      approvalToken
-    });
-
+    
     const readable = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of streamIterable) {
-            if (chunk.content) {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: chunk.content })}\n\n`));
-            }
-            if (chunk.done) {
-              controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
-            }
+          // Send thinking phase
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: "*Analyzing intent via PAIOSKernel...*\n" })}\n\n`));
+          
+          const result = await kernel.executeCommand(query, { sessionId, projectId });
+          
+          // Stream output
+          const parts = result.output.split(' ');
+          for (const word of parts) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: word + ' ' })}\n\n`));
+            await new Promise(r => setTimeout(r, 20)); // Simulate typing
           }
+          
+          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
         } catch (err: unknown) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: (err as Error).message })}\n\n`));
         } finally {
