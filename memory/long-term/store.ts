@@ -30,7 +30,7 @@ export class MemoryStore {
       {
         id: 'mem_init_02',
         user_id: 'usr_default',
-        content: 'Primary project is JARVIS — AI Operating System with modular skills and workers.',
+        content: 'Primary project is HIKMAH — AI Operating System with modular skills and workers.',
         memory_type: 'project_memory',
         importance: 9.0,
         confidence: 1.0,
