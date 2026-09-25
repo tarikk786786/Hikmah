@@ -1,41 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MemoryStore } from '@/memory/long-term/store';
-
-const memoryStore = new MemoryStore();
+import { PAIOSKernel } from '@/paio/kernel/paios-kernel';
 
 export async function GET(req: NextRequest) {
+  const kernel = PAIOSKernel.getInstance();
+  await kernel.boot();
+  
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('userId') || 'usr_default';
   const queryText = searchParams.get('query');
 
   if (queryText) {
-    const results = await memoryStore.retrieveRelevant({
-      userId,
-      queryText,
-      limit: 10
-    });
+    const results = kernel.knowledge.search(queryText);
     return NextResponse.json({ results });
   }
 
-  const all = await memoryStore.listAll(userId);
+  const all = kernel.knowledge.getVaultMap();
   return NextResponse.json({ memories: all });
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const kernel = PAIOSKernel.getInstance();
+    await kernel.boot();
+    
     const body = await req.json();
-    const { content, memory_type, importance = 5.0, user_id = 'usr_default' } = body;
+    const { content, memory_type, title, tags = [] } = body;
 
-    if (!content || !memory_type) {
-      return NextResponse.json({ error: 'content and memory_type are required' }, { status: 400 });
+    if (!content || !title) {
+      return NextResponse.json({ error: 'content and title are required' }, { status: 400 });
     }
 
-    const saved = await memoryStore.storeMemory({
-      user_id,
-      content,
-      memory_type,
-      importance: Number(importance),
-      confidence: 1.0,
+    const relPath = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.md`;
+    
+    const saved = await kernel.knowledge.writeNote(relPath, content, {
+      type: memory_type || 'note',
+      tags,
       source: 'api'
     });
 

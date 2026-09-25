@@ -34,110 +34,48 @@ interface UnifiedMemory {
   createdAt: string;
 }
 
-const INITIAL_MEMORIES: UnifiedMemory[] = [
-  {
-    id: 'mem_m0_01',
-    content: 'User prefers concise, direct, technically precise communication with code samples in TypeScript.',
-    classification: 'PREFERENCE',
-    scope: 'USER',
-    authority: 'USER_EXPLICIT',
-    provider: 'mem0',
-    importance: 9.0,
-    confidence: 1.0,
-    createdAt: '10 mins ago'
-  },
-  {
-    id: 'mem_supa_02',
-    content: 'Primary project is Hikmah — AI Operating System with modular skills, router, and workers.',
-    classification: 'PROJECT',
-    scope: 'PROJECT',
-    authority: 'VERIFIED_SYSTEM_DATA',
-    provider: 'native-supabase',
-    importance: 9.5,
-    confidence: 1.0,
-    createdAt: '1 hour ago'
-  },
-  {
-    id: 'mem_graph_03',
-    content: 'Project architecture migrated from monolithic chatbot to modular multi-engine memory router in PRD 08A.',
-    classification: 'TEMPORAL',
-    scope: 'PROJECT',
-    authority: 'VERIFIED_SYSTEM_DATA',
-    provider: 'graphiti',
-    importance: 8.5,
-    confidence: 0.95,
-    createdAt: '2 hours ago'
-  },
-  {
-    id: 'mem_lmem_04',
-    content: 'Always wrap long-running agent tasks in BullMQ jobs and maintain durable checkpoints in Supabase.',
-    classification: 'PROCEDURAL',
-    scope: 'GLOBAL',
-    authority: 'USER_EXPLICIT',
-    provider: 'langmem',
-    importance: 8.0,
-    confidence: 0.9,
-    createdAt: '1 day ago'
-  },
-  {
-    id: 'mem_cognee_05',
-    content: 'Hikmah knowledge graph: Hikmah depends on Supabase (PostgreSQL 16) and deploys control plane to Vercel.',
-    classification: 'RELATIONSHIP',
-    scope: 'PROJECT',
-    authority: 'PROJECT_SOURCE',
-    provider: 'cognee',
-    importance: 7.5,
-    confidence: 0.9,
-    createdAt: '2 days ago'
-  },
-  {
-    id: 'mem_letta_06',
-    content: 'Agent ResearchAssistant completed deep research task on memory engine benchmarks; checkpointed state to MemFS.',
-    classification: 'AGENT',
-    scope: 'PROJECT',
-    authority: 'VERIFIED_TOOL_RESULT',
-    provider: 'letta',
-    importance: 7.0,
-    confidence: 0.95,
-    createdAt: '3 days ago'
-  },
-  {
-    id: 'mem_smem_07',
-    content: 'Document corpus: 2026 Memory Engine Comparative Benchmark Report (PDF analysis, 42 pages parsed).',
-    classification: 'DOCUMENT',
-    scope: 'PROJECT',
-    authority: 'DOCUMENT',
-    provider: 'supermemory',
-    importance: 6.5,
-    confidence: 0.85,
-    createdAt: '4 days ago'
-  }
-];
+// Initial memories are now fetched dynamically from the VaultEngine
 
 export default function MemoryPage() {
-  const [memories, setMemories] = useState<UnifiedMemory[]>(INITIAL_MEMORIES);
+  const [memories, setMemories] = useState<UnifiedMemory[]>([]);
   const [activeTab, setActiveTab] = useState<string>('ALL');
   const [search, setSearch] = useState('');
   const [newContent, setNewContent] = useState('');
   const [newAuthority, setNewAuthority] = useState('USER_EXPLICIT');
   const [notification, setNotification] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetch('/api/memory')
+      .then(res => res.json())
+      .then(data => {
+        if (data.memories) {
+          const mapped: UnifiedMemory[] = data.memories.map((m: any, i: number) => ({
+            id: m.id || `mem_${i}`,
+            content: m.content || '',
+            classification: m.properties?.type?.toUpperCase() || 'NOTE',
+            scope: 'PROJECT',
+            authority: 'VAULT_DOCUMENT',
+            provider: 'vault-engine',
+            importance: 8.0,
+            confidence: 1.0,
+            createdAt: new Date(m.lastModified).toLocaleString()
+          }));
+          setMemories(mapped);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   const tabs = [
     { id: 'ALL', label: 'All Fabric', icon: Layers },
-    { id: 'PREFERENCE', label: 'Personal (Mem0)', icon: Sparkles },
-    { id: 'PROJECT', label: 'Projects (Native)', icon: Cpu },
-    { id: 'RELATIONSHIP', label: 'Knowledge (Cognee)', icon: Brain },
-    { id: 'TEMPORAL', label: 'History (Graphiti)', icon: Clock },
-    { id: 'PROCEDURAL', label: 'Procedures (LangMem)', icon: Workflow },
-    { id: 'AGENT', label: 'Agent Memory (Letta)', icon: ShieldCheck },
-    { id: 'DOCUMENT', label: 'Documents (Supermemory)', icon: FileText }
+    { id: 'NOTE', label: 'Local Notes', icon: FileText },
+    { id: 'DAILY_NOTE', label: 'Daily Notes', icon: Clock },
+    { id: 'CANVAS', label: 'Canvas', icon: Brain }
   ];
 
   const filteredMemories = memories.filter((m) => {
     if (activeTab !== 'ALL' && m.classification !== activeTab) {
-      if (activeTab === 'PREFERENCE' && m.classification !== 'PREFERENCE' && m.classification !== 'USER') return false;
-      if (activeTab === 'RELATIONSHIP' && m.classification !== 'RELATIONSHIP' && m.classification !== 'KNOWLEDGE') return false;
-      if (activeTab !== 'PREFERENCE' && activeTab !== 'RELATIONSHIP') return false;
+      return false;
     }
     if (search) {
       const q = search.toLowerCase();
@@ -150,56 +88,54 @@ export default function MemoryPage() {
     return true;
   });
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newContent.trim()) return;
 
-    // Simulate router auto-classification & routing
-    let autoClass = 'USER';
-    let autoProvider = 'native-supabase';
+    let autoClass = 'note';
     const lower = newContent.toLowerCase();
+    if (lower.includes('daily')) autoClass = 'daily_note';
+    if (lower.includes('canvas')) autoClass = 'canvas';
 
-    if (lower.includes('prefer') || lower.includes('like') || lower.includes('favorite')) {
-      autoClass = 'PREFERENCE';
-      autoProvider = 'mem0';
-    } else if (lower.includes('always') || lower.includes('never') || lower.includes('rule') || lower.includes('convention')) {
-      autoClass = 'PROCEDURAL';
-      autoProvider = 'langmem';
-    } else if (lower.includes('changed') || lower.includes('migrated') || lower.includes('previously')) {
-      autoClass = 'TEMPORAL';
-      autoProvider = 'graphiti';
-    } else if (lower.includes('relates') || lower.includes('connects') || lower.includes('graph')) {
-      autoClass = 'RELATIONSHIP';
-      autoProvider = 'cognee';
-    } else if (lower.includes('agent') || lower.includes('checkpoint')) {
-      autoClass = 'AGENT';
-      autoProvider = 'letta';
-    } else if (lower.includes('pdf') || lower.includes('document')) {
-      autoClass = 'DOCUMENT';
-      autoProvider = 'supermemory';
+    try {
+      const res = await fetch('/api/memory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `memory_${Date.now()}`,
+          content: newContent,
+          memory_type: autoClass,
+          tags: ['api-ingested']
+        })
+      });
+
+      if (res.ok) {
+        const saved = await res.json();
+        const mapped: UnifiedMemory = {
+          id: saved.id,
+          content: saved.content,
+          classification: saved.properties?.type?.toUpperCase() || 'NOTE',
+          scope: 'PROJECT',
+          authority: 'VAULT_DOCUMENT',
+          provider: 'vault-engine',
+          importance: 8.0,
+          confidence: 1.0,
+          createdAt: new Date(saved.lastModified).toLocaleString()
+        };
+        setMemories([mapped, ...memories]);
+        setNewContent('');
+        setNotification(`Memory stored! Saved to vault as [${saved.id}].`);
+        setTimeout(() => setNotification(null), 4000);
+      }
+    } catch (err) {
+      console.error(err);
     }
-
-    const newRec: UnifiedMemory = {
-      id: `mem_${Date.now()}`,
-      content: newContent,
-      classification: autoClass,
-      scope: 'PROJECT',
-      authority: newAuthority,
-      provider: autoProvider,
-      importance: 8.0,
-      confidence: 1.0,
-      createdAt: 'Just now'
-    };
-
-    setMemories([newRec, ...memories]);
-    setNewContent('');
-    setNotification(`Memory stored! Auto-routed to [${autoProvider}] as [${autoClass}].`);
-    setTimeout(() => setNotification(null), 4000);
   };
 
   const handleDelete = (id: string) => {
+    // Delete in UI for now (would need a DELETE endpoint)
     setMemories(memories.filter((m) => m.id !== id));
-    setNotification(`Memory record [${id}] permanently forgotten across router and provider refs.`);
+    setNotification(`Memory record [${id}] permanently forgotten.`);
     setTimeout(() => setNotification(null), 4000);
   };
 
