@@ -1,5 +1,6 @@
 import { AIAgent } from '../../types/universal.js';
 import { IAgentProvider, AgentExecutionRequest, AgentExecutionResult } from '../agent-executor.js';
+import { DockerSandbox } from '../../sandbox/docker-sandbox.js';
 
 /**
  * Adapter for OpenHands (formerly OpenDevin)
@@ -7,23 +8,30 @@ import { IAgentProvider, AgentExecutionRequest, AgentExecutionResult } from '../
  */
 export class OpenHandsAdapter implements IAgentProvider {
   public providerId = 'openhands';
+  private sandbox: DockerSandbox | null = null;
 
   async initialize(): Promise<void> {
     console.log('[OpenHandsAdapter] Initializing secure coding sandbox connection...');
-    // Real implementation would connect to the OpenHands Docker container/daemon here.
+    this.sandbox = new DockerSandbox('ghcr.io/openhands/sandbox:latest');
+    await this.sandbox.start();
   }
 
   async execute(agent: AIAgent, request: AgentExecutionRequest): Promise<AgentExecutionResult> {
-    console.log(`[OpenHandsAdapter] Delegating repository task ${request.taskId} to OpenHands...`);
+    if (!this.sandbox) throw new Error('Sandbox not initialized');
+
+    console.log(`[OpenHandsAdapter] Delegating repository task ${request.taskId} to OpenHands Sandbox...`);
     
-    // Simulated adapter execution for phase 1
+    // Simulate an OpenHands agent iteration
+    const result = await this.sandbox.executeCommand(`bash -c "echo Executing task: ${request.instructions}"`);
+    
     return {
       taskId: request.taskId,
-      status: 'COMPLETED',
-      output: `OpenHands successfully analyzed repository and modified files for task: ${request.instructions}`,
+      status: result.exitCode === 0 ? 'COMPLETED' : 'FAILED',
+      output: `OpenHands execution trace:\n${result.stdout}`,
       metadata: {
         filesModified: 1,
-        sandboxRuntime: 'docker'
+        sandboxRuntime: 'docker',
+        sandboxId: this.sandbox.id
       },
       usage: {
         promptTokens: 250,
