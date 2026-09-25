@@ -46,7 +46,7 @@ export default function SecurityPage() {
         <div>
           <h2 className="text-base font-bold text-[#F1F5F9] flex items-center space-x-2">
             <AlertTriangle className={`w-5 h-5 ${killSwitch ? 'text-red-500' : 'text-amber-400'}`} />
-            <span>JARVIS MASTER KILL-SWITCH</span>
+            <span>HIKMAH MASTER KILL-SWITCH</span>
           </h2>
           <p className="text-xs text-[#94A3B8] mt-1">
             When active, all autonomous agent tool executions and background jobs are immediately suspended.

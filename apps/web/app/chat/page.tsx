@@ -17,7 +17,7 @@ export default function AllInOnePage() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'Good evening. J.A.R.V.I.S. unified core systems online. Voice interface, memory, and model router are fully integrated. What shall we do?'
+      content: 'Good evening. HIKMAH unified core systems online. Voice interface, memory, and model router are fully integrated. What shall we do?'
     }
   ]);
   const [input, setInput] = useState('');
@@ -121,10 +121,10 @@ export default function AllInOnePage() {
       setLiveTranscript('Listening for operator audio stream (faster-whisper VAD)...');
       
       setTimeout(() => {
-        setLiveTranscript('"JARVIS, summarize current memory store status."');
+        setLiveTranscript('"HIKMAH, summarize current memory store status."');
         setTimeout(() => {
           setListening(false);
-          handleSubmit(undefined, "JARVIS, summarize current memory store status.");
+          handleSubmit(undefined, "HIKMAH, summarize current memory store status.");
         }, 1500);
       }, 3000);
     } else {
@@ -249,7 +249,7 @@ export default function AllInOnePage() {
                 className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <motion.div layout className="flex items-center space-x-2 mb-2 text-[11px] tracking-wider text-[#64748B] font-mono">
-                  <span>{msg.role === 'user' ? 'OPERATOR' : 'JARVIS'}</span>
+                  <span>{msg.role === 'user' ? 'OPERATOR' : 'HIKMAH'}</span>
                 </motion.div>
 
                 <motion.div
@@ -425,7 +425,7 @@ export default function AllInOnePage() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Command JARVIS..."
+              placeholder="Command HIKMAH..."
               className="w-full bg-[#111827] text-[#F1F5F9] placeholder-[#64748B] text-sm pl-5 pr-28 py-3.5 rounded-2xl border border-[#1E293B] focus:outline-none focus:border-[#00F0FF]/50 focus:ring-1 focus:ring-[#00F0FF]/50 transition-all shadow-inner"
             />
             <div className="absolute right-2.5 flex items-center space-x-2">

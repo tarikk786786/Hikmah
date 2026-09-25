@@ -67,7 +67,7 @@ export class ToolRegistry {
       AuditLogger.log('TOOL_NOT_FOUND', 'LOW', ctx.correlation, { toolName: name });
       return {
         success: false,
-        error: `Tool "${name}" is not registered in JARVIS Tool Registry`,
+        error: `Tool "${name}" is not registered in HIKMAH Tool Registry`,
         executionTimeMs: Date.now() - start
       };
     }

@@ -13,7 +13,7 @@ export default function VoicePage() {
       setListening(true);
       setTranscript('Listening for operator audio stream (faster-whisper VAD)...');
       setTimeout(() => {
-        setTranscript('"JARVIS, summarize current memory store status."');
+        setTranscript('"HIKMAH, summarize current memory store status."');
         setResponse('Operating at nominal efficiency, sir. All vectors indexed across short-term and persistent long-term storage.');
         setListening(false);
       }, 3000);
@@ -79,7 +79,7 @@ export default function VoicePage() {
             <div className="pt-3 border-t border-[#1E293B] space-y-1">
               <div className="text-[#00F0FF] flex items-center space-x-2">
                 <Volume2 className="w-3.5 h-3.5" />
-                <span>JARVIS SYNTHESIZED SPEECH (PIPER)</span>
+                <span>HIKMAH SYNTHESIZED SPEECH (PIPER)</span>
               </div>
               <p className="text-[#94A3B8] font-sans text-sm">{response}</p>
             </div>

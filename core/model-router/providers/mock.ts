@@ -42,8 +42,19 @@ export class MockProvider implements AIProvider {
       };
     }
 
+    const systemMessages = input.messages.filter(m => m.role === 'system');
+    const toolResultMsg = systemMessages.find(m => m.content.includes('Tool Execution Results:'));
+    if (toolResultMsg) {
+      return {
+        content: `[HIKMAH Core Execution]\nI executed the required modules.\n\nResults:\n${toolResultMsg.content.replace('Tool Execution Results:', '').trim()}`,
+        model: 'mock-engine-v1',
+        provider: 'mock',
+        usage: { promptTokens: 30, completionTokens: 40, totalTokens: 70 }
+      };
+    }
+
     return {
-      content: `[JARVIS Offline Simulation] I have received: "${lastUserMessage}". Systems operational.`,
+      content: `[HIKMAH Core] I have processed your request: "${lastUserMessage}". No execution tools matched. Systems operational.`,
       model: 'mock-engine-v1',
       provider: 'mock',
       usage: { promptTokens: 12, completionTokens: 14, totalTokens: 26 }

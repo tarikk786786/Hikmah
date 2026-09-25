@@ -7,7 +7,7 @@ export default function LogsPage() {
   const [filter, setFilter] = useState('');
 
   const sampleLogs = [
-    { id: '1', time: new Date().toLocaleTimeString(), event: 'JARVIS_CORE_BOOTSTRAP', risk: 'LOW', reqId: 'req_init01', details: 'All 6 subsystems initialized' },
+    { id: '1', time: new Date().toLocaleTimeString(), event: 'HIKMAH_CORE_BOOTSTRAP', risk: 'LOW', reqId: 'req_init01', details: 'All 6 subsystems initialized' },
     { id: '2', time: new Date().toLocaleTimeString(), event: 'ROUTER_PROVIDER_DISCOVERY', risk: 'LOW', reqId: 'req_init02', details: 'Registered 5 providers with fallback cascade' },
     { id: '3', time: new Date().toLocaleTimeString(), event: 'TOOL_REGISTRY_SYNC', risk: 'LOW', reqId: 'req_init03', details: '4 foundational tool adapters bound' },
     { id: '4', time: new Date().toLocaleTimeString(), event: 'MEMORY_STORE_INDEX', risk: 'LOW', reqId: 'req_init04', details: 'pgvector memory table loaded' }

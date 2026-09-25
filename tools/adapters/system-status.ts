@@ -3,7 +3,7 @@ import { ToolDefinition, ToolResult, ExecutionContext } from '../registry/types.
 export const SystemStatusTool: ToolDefinition = {
   name: 'system_status',
   version: '1.0.0',
-  description: 'Inspect JARVIS real-time operational status, memory metrics, queue readiness, and safety flags',
+  description: 'Inspect HIKMAH real-time operational status, memory metrics, queue readiness, and safety flags',
   risk: 'LOW',
   timeoutMs: 3000,
   enabled: true,

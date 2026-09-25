@@ -5,7 +5,7 @@ import { FolderKanban, Plus, Clock } from 'lucide-react';
 
 export default function ProjectsPage() {
   const projects = [
-    { id: 'p1', name: 'JARVIS AI Operating System', desc: 'Phase 1 modular foundation with Model Router, pgvector, MCP and BullMQ workers.', status: 'Active', tasks: 12 },
+    { id: 'p1', name: 'HIKMAH AI Operating System', desc: 'Phase 1 modular foundation with Model Router, pgvector, MCP and BullMQ workers.', status: 'Active', tasks: 12 },
     { id: 'p2', name: 'OpenHands Sandbox Integration', desc: 'Step 11 coding agent worker environment for repository analysis and test automation.', status: 'Planned', tasks: 4 },
     { id: 'p3', name: 'Browser-Use Playwright Worker', desc: 'Step 10 browser agent worker for authenticated session workflows.', status: 'Planned', tasks: 6 }
   ];

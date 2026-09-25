@@ -41,7 +41,7 @@ export default function DashboardPage() {
       <div className="flex justify-between items-center border-b border-[#1E293B] pb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-wider text-[#F1F5F9] flex items-center space-x-3">
-            <span>JARVIS SYSTEM COCKPIT</span>
+            <span>HIKMAH SYSTEM COCKPIT</span>
             <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/30">
               PHASE 1 OPERATIONAL
             </span>
@@ -56,7 +56,7 @@ export default function DashboardPage() {
             href="/chat"
             className="px-4 py-2 bg-[#00F0FF] hover:bg-[#00D0DF] text-[#0B0F17] font-semibold text-xs rounded-lg transition flex items-center space-x-1.5"
           >
-            <span>Open JARVIS Chat</span>
+            <span>Open HIKMAH Chat</span>
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>

@@ -113,7 +113,7 @@ export class JarvisCore {
     // 1. Safety & Kill Switch Check
     if (this.safety.isKillSwitchActive()) {
       return {
-        content: 'Hikmah / J.A.R.V.I.S. Master Kill-Switch is active. Autonomous actions and model invocations are temporarily suspended.',
+        content: 'HIKMAH Master Kill-Switch is active. Autonomous actions and model invocations are temporarily suspended.',
         toolResults: [],
         correlation,
         memoriesUsed: 0,

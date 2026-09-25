@@ -22,7 +22,20 @@ export class TaskPlanner {
     const steps: PlanStep[] = [];
 
     // Intelligent heuristic decomposition for Phase 1
-    if (lowerGoal.includes('search') || lowerGoal.includes('research') || lowerGoal.includes('who is') || lowerGoal.includes('what is')) {
+    if (lowerGoal.includes('status') || lowerGoal.includes('system') || lowerGoal.includes('health')) {
+      steps.push({
+        stepNumber: 1,
+        description: 'Fetch real-time HIKMAH system telemetry',
+        toolName: availableTools.includes('system_status') ? 'system_status' : undefined,
+        parameters: {},
+        status: 'pending'
+      });
+      steps.push({
+        stepNumber: 2,
+        description: 'Analyze telemetry and report to operator',
+        status: 'pending'
+      });
+    } else if (lowerGoal.includes('search') || lowerGoal.includes('research') || lowerGoal.includes('who is') || lowerGoal.includes('what is')) {
       steps.push({
         stepNumber: 1,
         description: `Search public web for: ${goal}`,
