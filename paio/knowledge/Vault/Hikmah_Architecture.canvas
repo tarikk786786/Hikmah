@@ -1,0 +1,64 @@
+{
+  "nodes": [
+    {
+      "id": "node_frontend",
+      "type": "text",
+      "text": "# Next.js UI\nDashboard, Memory, Agents, Voice.",
+      "x": -400,
+      "y": -200,
+      "width": 300,
+      "height": 150
+    },
+    {
+      "id": "node_kernel",
+      "type": "text",
+      "text": "# PAIOSKernel (Backend)\nGod-class brain.",
+      "x": 0,
+      "y": -200,
+      "width": 300,
+      "height": 150
+    },
+    {
+      "id": "node_vault",
+      "type": "text",
+      "text": "# VaultEngine (Obsidian)\nStores everything as .md and .canvas.",
+      "x": 0,
+      "y": 50,
+      "width": 300,
+      "height": 150
+    },
+    {
+      "id": "node_jobs",
+      "type": "text",
+      "text": "# JobQueue & A2ABroker\nBackground workers.",
+      "x": 400,
+      "y": -200,
+      "width": 300,
+      "height": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_front_kernel",
+      "fromNode": "node_frontend",
+      "fromSide": "right",
+      "toNode": "node_kernel",
+      "toSide": "left",
+      "label": "/api/paios/execute"
+    },
+    {
+      "id": "edge_kernel_vault",
+      "fromNode": "node_kernel",
+      "fromSide": "bottom",
+      "toNode": "node_vault",
+      "toSide": "top"
+    },
+    {
+      "id": "edge_kernel_jobs",
+      "fromNode": "node_kernel",
+      "fromSide": "right",
+      "toNode": "node_jobs",
+      "toSide": "left"
+    }
+  ]
+}
