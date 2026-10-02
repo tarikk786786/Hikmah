@@ -15,7 +15,7 @@
     "worker:agent": "ts-node workers/agent-worker/index.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.1",
+    "@supabase/supabase-js": "^2.117.2",
     "ai": "^7.0.102",
     "dotenv": "^16.6.1",
     "ioredis": "^5.6.1",
