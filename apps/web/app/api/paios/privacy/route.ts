@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { PAIOSPolicyEngine, PrivacyMode } from '@/paio/policy/paios-policy-engine';
 

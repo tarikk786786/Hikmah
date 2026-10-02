@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { BackupEngine } from '@/storage/core/backup/backup-engine';
 import { BackupType } from '@/storage/core/types';

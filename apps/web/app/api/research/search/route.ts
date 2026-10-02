@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { SearchRouter } from '@/research/core/search-router';
 import { SearchIntent } from '@/research/core/types';

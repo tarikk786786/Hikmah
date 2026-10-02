@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { StorageOrchestrator } from '@/storage/core/orchestrator';
 import { StorageTier } from '@/storage/core/types';

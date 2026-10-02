@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { ToolRegistry } from '@/tools/registry/registry';
 import { AuditLogger } from '@/security/audit/logger';

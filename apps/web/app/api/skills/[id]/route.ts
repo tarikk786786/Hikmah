@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { SkillIntelligenceEngine } from '../../../../../../skills/intelligence/skill-intelligence-engine.js';
 
